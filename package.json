@@ -7,16 +7,17 @@
   "license": "MIT",
   "author": "S. Mahdi Mir-Ismaili <s.m.mirismaili@gmail.com>",
   "type": "module",
-  "main": "src/main.js",
+  "main": "src/server/server.js",
   "files": [
     "src"
   ],
   "scripts": {
-    "start": "node src/main.js",
+    "start": "node src/server/server.js",
     "keygen": "node src/crypto/keygen.js"
   },
   "dependencies": {
-    "ansi-colors-and-styles": "^1.0.3"
+    "0http": "3.1.2",
+    "ansi-colors-and-styles": "1.0.3"
   },
   "engines": {
     "node": ">=16"
