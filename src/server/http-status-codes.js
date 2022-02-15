@@ -1,5 +1,10 @@
 import {STATUS_CODES} from 'http'
 
+/**
+ * Created on 1400/11/25 (2022/2/14).
+ * @author {@link https://mirismaili.github.io S. Mahdi Mir-Ismaili}
+ */
+
 const HTTP_STATUS_CODES = Object.fromEntries(Object.entries(STATUS_CODES).map(([code, status]) =>
   [status.toUpperCase().replaceAll(/[ '-]/g, '_'), +code],
 ))

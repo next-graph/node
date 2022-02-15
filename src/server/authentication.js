@@ -1,6 +1,11 @@
 import {createHash, timingSafeEqual} from 'node:crypto'
 import {FORBIDDEN, UNAUTHORIZED} from './http-status-codes.js'
 
+/**
+ * Created on 1400/11/25 (2022/2/14).
+ * @author {@link https://mirismaili.github.io S. Mahdi Mir-Ismaili}
+ */
+
 const bearerHashBuf = Buffer.from(process.env.bearerHash, 'hex')
 const BEARER_PREFIX = 'Bearer '
 

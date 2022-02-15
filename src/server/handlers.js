@@ -1,14 +1,36 @@
 import {fullFormats} from 'ajv-formats/dist/formats.js'
+import {readFile} from 'node:fs/promises'
 import {BAD_REQUEST} from './http-status-codes.js'
 import {endpoints} from './server.js'
 
-// public handlers:
+/**
+ * Created on 1400/11/25 (2022/2/14).
+ * @author {@link https://mirismaili.github.io S. Mahdi Mir-Ismaili}
+ */
+  
+  // public-static handlers:
+
+export const [indexHtml, indexJs, apiJs] = await Promise.all([
+    readFile('src/index.html'),
+    readFile('src/index.js'),
+    readFile('src/api.js'),
+  ])
+
+export function serveHtmlFile(fileBuffer, req, res) {
+  res.htmlContentType().end(fileBuffer)
+}
+
+export function serveJsFile(fileBuffer, req, res) {
+  res.jsContentType().end(fileBuffer)
+}
+
+// public-dynamic handlers:
 
 export function sayHello(req, res) {
   res.end(`Hello ${req.params.name}`)
 }
 
-// private handlers:
+// private-dynamic handlers:
 
 export function addEndpoint(req, res) {
   const {query: {endpoint}} = req
@@ -26,5 +48,5 @@ export function addEndpoint(req, res) {
 }
 
 export function showEndpoints(req, res) {
-  res.headers({'Content-Type': 'application/json'}).end(JSON.stringify([...endpoints]))
+  res.jsonContentType().end(JSON.stringify([...endpoints]))
 }
