@@ -8,22 +8,7 @@ import sequential from '0http/lib/router/sequential.js'
 import {authenticationMiddleware} from './authentication.js'
 import {addEndpoint, sayHello, showEndpoints} from './handlers.js'
 import {INTERNAL_SERVER_ERROR} from './http-constants.js'
-import {
-  badRequest,
-  created,
-  forbidden,
-  internalServerError,
-  notAcceptable,
-  notFound,
-  sendFile,
-  setContentType,
-  setHtmlContentType,
-  setJsContentType,
-  setJsonContentType,
-  setResponseHeaders,
-  setResponseStatusCodeAndMessage,
-  unauthorized,
-} from './quick-response.js'
+import {setUsefulMethods} from './quick-response.js'
 import {apiJs, faviconIco, indexHtml, indexJs} from './static-resources.js'
 
 export const endpoints = new Set(process.env.endpoints?.split(' '))
@@ -41,30 +26,9 @@ const {router, server} = cero({
 
 // global middlewares:
 
-// Set useful methods:
-router.use('/', (req, res, next) => {
-  // noinspection DuplicatedCode
-  res.status = setResponseStatusCodeAndMessage
-  res.headers = setResponseHeaders
-  
-  res.contentType = setContentType
-  res.jsonContentType = setJsonContentType
-  res.htmlContentType = setHtmlContentType
-  res.jsContentType = setJsContentType
-  
-  res.sendFile = sendFile
-  
-  // noinspection DuplicatedCode
-  res.created = created
-  res.badRequest = badRequest
-  res.unauthorized = unauthorized
-  res.forbidden = forbidden
-  res.notFound = notFound
-  res.notAcceptable = notAcceptable
-  res.internalServerError = internalServerError
-  
-  next()
-})
+router.use('/', setUsefulMethods)
+
+// static routes (public):
 
 router.get('/', indexHtml.serve)
 router.get('/index.html', indexHtml.serve)

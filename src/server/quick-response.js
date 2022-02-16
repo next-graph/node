@@ -5,18 +5,40 @@
 
 import {
   BAD_REQUEST,
-  CONTENT_ENCODING,
-  CONTENT_LENGTH,
   CONTENT_TYPE,
   CREATED,
   FORBIDDEN,
   INTERNAL_SERVER_ERROR,
   NOT_ACCEPTABLE,
   NOT_FOUND,
+  PAYLOAD_TOO_LARGE,
   UNAUTHORIZED,
   WWW_AUTHENTICATE,
 } from './http-constants.js'
 import {fileTypesInfo} from './static-resources.js'
+
+// ********************************************************************************************************************/
+
+export function setUsefulMethods(req, res, next) {
+  res.status = setResponseStatusCodeAndMessage
+  res.headers = setResponseHeaders
+  
+  res.contentType = setContentType
+  res.jsonContentType = setJsonContentType
+  res.htmlContentType = setHtmlContentType
+  res.jsContentType = setJsContentType
+  
+  res.created = created
+  res.badRequest = badRequest
+  res.unauthorized = unauthorized
+  res.forbidden = forbidden
+  res.notFound = notFound
+  res.notAcceptable = notAcceptable
+  res.payloadTooLarge = payloadTooLarge
+  res.internalServerError = internalServerError
+  
+  next()
+}
 
 // ********************************************************************************************************************/
 
@@ -47,16 +69,6 @@ export function setHtmlContentType() {
 export function setJsContentType() {
   this.setHeader(CONTENT_TYPE, fileTypesInfo.js.mimeType)
   return this
-}
-
-// ********************************************************************************************************************/
-
-export function sendFile(file) {
-  this.setHeader(CONTENT_TYPE, file.mimeType)
-  this.setHeader(CONTENT_LENGTH, file.buffer.length)
-  if (file.encoding)
-    this.setHeader(CONTENT_ENCODING, file.encoding)
-  this.end(file.buffer)
 }
 
 // ********************************************************************************************************************/
@@ -97,6 +109,11 @@ export function notFound(message = undefined) { // noinspection JSUnusedGlobalSy
 
 export function notAcceptable(message = undefined) { // noinspection JSUnusedGlobalSymbols:
   this.statusCode = NOT_ACCEPTABLE
+  this.end(message)
+}
+
+export function payloadTooLarge(message = undefined) { // noinspection JSUnusedGlobalSymbols:
+  this.statusCode = PAYLOAD_TOO_LARGE
   this.end(message)
 }
 
