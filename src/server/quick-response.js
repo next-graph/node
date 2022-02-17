@@ -14,7 +14,7 @@ import {
   PAYLOAD_TOO_LARGE,
   UNAUTHORIZED,
   WWW_AUTHENTICATE,
-} from '../http-constants.js'
+} from '../client/http-constants.js'
 import {fileTypesInfo} from './static-resources.js'
 
 // ********************************************************************************************************************/

@@ -7,7 +7,8 @@ import {readFile} from 'node:fs/promises'
 import {extname} from 'node:path'
 import {promisify} from 'node:util'
 import {brotliCompress as brCompress} from 'node:zlib'
-import {ACCEPT_ENCODING, CONTENT_ENCODING, CONTENT_LENGTH, CONTENT_TYPE} from '../http-constants.js'
+import {ACCEPT_ENCODING, CONTENT_ENCODING, CONTENT_LENGTH, CONTENT_TYPE} from '../client/http-constants.js'
+import {deepReadDir} from '../util.js'
 
 const brotliCompress = promisify(brCompress)
 
@@ -27,32 +28,31 @@ export const fileTypesInfo = {
   ico: {mimeType: 'image/x-icon'},
 }
 
-const paths = { // Run promises in parallel:
-  indexHtml: 'src/index.html',
-  indexJs: 'src/index.js',
-  apiJs: 'src/api.js',
-  httpConstantsJs: 'src/http-constants.js',
-  faviconIco: 'res/favicon.ico',
-}
+const clientPath = 'src/client'
+const paths = (await deepReadDir(clientPath)).flat(Number.POSITIVE_INFINITY)
 
 /**
  * @example
  * {
- *  indexHtml: {
- *    path: 'src/index.html',
+ *  '/index.html': {
+ *    path: 'src/client/index.html',
  *    mimeType: 'text/html; charset=UTF-8',
  *    encoding: 'br',
  *    buffer: <Buffer 1b 46 01 80 8c 93 ... 85 more bytes>,
  *    serve: [Function: bound sendFile],
  *  },
- *  indexJs: {
+ *  '/index.js': {
  *    // ...
- *   }
+ *   },
+ *  '/res/favicon.ico': {
+ *    // ...
+ *   },
  * }
  */
 const files = Object.fromEntries(await Promise.all(
-  Object.entries(paths).map(async ([fileKey, filePath]) => [
-    fileKey, await resolveFile(filePath),
+  paths.map(async (filePath) => [
+    filePath.slice(clientPath.length), // `fileKey`, ex. "/index.html", "/res/favicon.ico", ...
+    await resolveFile(filePath), // file entity. See the above @example
   ]),
 ))
 

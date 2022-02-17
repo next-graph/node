@@ -5,7 +5,7 @@
 
 import cero from '0http'
 import sequential from '0http/lib/router/sequential.js'
-import {INTERNAL_SERVER_ERROR} from '../http-constants.js'
+import {INTERNAL_SERVER_ERROR} from '../client/http-constants.js'
 import {authenticationMiddleware} from './authentication.js'
 import {addEndpoint, sayHello, showEndpoints} from './handlers.js'
 import {setUsefulMethods} from './quick-response.js'
@@ -30,14 +30,12 @@ router.use('/', setUsefulMethods)
 
 // static routes (public):
 
-router.get('/', files.indexHtml.serve)
-router.get('/index.html', files.indexHtml.serve)
+// // special routes:
+router.get('/', files['/index.html'].serve)
 
-router.get('/index.js', files.indexJs.serve)
-router.get('/api.js', files.apiJs.serve)
-router.get('/http-constants.js', files.httpConstantsJs.serve)
-
-router.get('/res/favicon.ico', files.faviconIco.serve)
+// // general routes:
+for (const filesKey in files) // serve all files in `files` (located in `./src/client` (recursively)):
+  router.get(filesKey, files[filesKey].serve)
 
 // public routes:
 
@@ -49,7 +47,7 @@ router.post('/addEndpoint', authenticationMiddleware, addEndpoint)
 
 router.get('/showEndpoints', authenticationMiddleware, showEndpoints)
 
-// start server:
+// start the server:
 
 const PORT = 3333
 server.listen(PORT, err => {
