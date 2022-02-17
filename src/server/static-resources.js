@@ -60,29 +60,31 @@ async function resolveFile(path) {
   const rawBuffer = await readFile(path)
   const {mimeType, encoding} = fileTypesInfo[extname(path).slice(1) /* omit leading dot */]
   const buffer = encoding === 'br' ? await brotliCompress(rawBuffer) : rawBuffer
-  return {
+  const file = {
     path,
     mimeType,
     encoding,
     buffer,
-    serve: sendFile.bind(null, mimeType, encoding, buffer),
+    serve: sendFile, // is here just for type
   }
+  file.serve = sendFile.bind(file)
+  return file
 }
 
-export function sendFile(mimeType, encoding, buffer, req, res) {
-  res.setHeader(CONTENT_TYPE, mimeType)
-  res.setHeader(CONTENT_LENGTH, buffer.length)
+function sendFile(req, res) {
+  res.setHeader(CONTENT_TYPE, this.mimeType)
+  res.setHeader(CONTENT_LENGTH, this.buffer.length)
   
-  if (encoding) {
+  if (this.encoding) {
     if (!req.headers[ACCEPT_ENCODING.toLowerCase()]?.split(',').find(acceptedEncoding =>
-      [encoding, '*'].includes(
+      [this.encoding, '*'].includes(
         acceptedEncoding.trim().split(';')[0].trim().toLowerCase(),
       ),
-    ))
-      return res.notAcceptable(`No accepted encoding matches: "${encoding}"`)
-    
-    res.setHeader(CONTENT_ENCODING, encoding)
+    )) {
+      return res.notAcceptable(`No accepted encoding matches: "${this.encoding}"`)
+    }
+    res.setHeader(CONTENT_ENCODING, this.encoding)
   }
   
-  res.end(buffer)
+  res.end(this.buffer)
 }
