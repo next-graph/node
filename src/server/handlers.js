@@ -4,7 +4,7 @@
  */
 
 import {fullFormats} from 'ajv-formats/dist/formats.js'
-import {ALREADY_REPORTED, CONTENT_TYPE, CREATED} from './http-constants.js'
+import {ALREADY_REPORTED, CONTENT_TYPE, CREATED} from '../http-constants.js'
 import {endpoints} from './server.js'
 import {fileTypesInfo} from './static-resources.js'
 

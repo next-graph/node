@@ -5,11 +5,11 @@
 
 import cero from '0http'
 import sequential from '0http/lib/router/sequential.js'
+import {INTERNAL_SERVER_ERROR} from '../http-constants.js'
 import {authenticationMiddleware} from './authentication.js'
 import {addEndpoint, sayHello, showEndpoints} from './handlers.js'
-import {INTERNAL_SERVER_ERROR} from './http-constants.js'
 import {setUsefulMethods} from './quick-response.js'
-import {apiJs, faviconIco, indexHtml, indexJs} from './static-resources.js'
+import files from './static-resources.js'
 
 export const endpoints = new Set(process.env.endpoints?.split(' '))
 
@@ -30,13 +30,14 @@ router.use('/', setUsefulMethods)
 
 // static routes (public):
 
-router.get('/', indexHtml.serve)
-router.get('/index.html', indexHtml.serve)
+router.get('/', files.indexHtml.serve)
+router.get('/index.html', files.indexHtml.serve)
 
-router.get('/index.js', indexJs.serve)
-router.get('/api.js', apiJs.serve)
+router.get('/index.js', files.indexJs.serve)
+router.get('/api.js', files.apiJs.serve)
+router.get('/http-constants.js', files.httpConstantsJs.serve)
 
-router.get('/res/favicon.ico', faviconIco.serve)
+router.get('/res/favicon.ico', files.faviconIco.serve)
 
 // public routes:
 

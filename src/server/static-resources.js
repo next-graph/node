@@ -7,7 +7,7 @@ import {readFile} from 'node:fs/promises'
 import {extname} from 'node:path'
 import {promisify} from 'node:util'
 import {brotliCompress as brCompress} from 'node:zlib'
-import {ACCEPT_ENCODING, CONTENT_ENCODING, CONTENT_LENGTH, CONTENT_TYPE} from './http-constants.js'
+import {ACCEPT_ENCODING, CONTENT_ENCODING, CONTENT_LENGTH, CONTENT_TYPE} from '../http-constants.js'
 
 const brotliCompress = promisify(brCompress)
 
@@ -27,11 +27,12 @@ export const fileTypesInfo = {
   ico: {mimeType: 'image/x-icon'},
 }
 
-const filesPromises = { // Run promises in parallel:
-  indexHtml: resolveFile('src/index.html'),
-  indexJs: resolveFile('src/index.js'),
-  apiJs: resolveFile('src/api.js'),
-  faviconIco: resolveFile('res/favicon.ico'),
+const paths = { // Run promises in parallel:
+  indexHtml: 'src/index.html',
+  indexJs: 'src/index.js',
+  apiJs: 'src/api.js',
+  httpConstantsJs: 'src/http-constants.js',
+  faviconIco: 'res/favicon.ico',
 }
 
 /**
@@ -49,12 +50,13 @@ const filesPromises = { // Run promises in parallel:
  *   }
  * }
  */
-const files = {}
-for (const fileKey in filesPromises) { // await all:
-  files[fileKey] = await filesPromises[fileKey]
-}
+const files = Object.fromEntries(await Promise.all(
+  Object.entries(paths).map(async ([fileKey, filePath]) => [
+    fileKey, await resolveFile(filePath),
+  ]),
+))
 
-export const {indexHtml, indexJs, apiJs, faviconIco} = files
+export default files
 
 async function resolveFile(path) {
   const rawBuffer = await readFile(path)
